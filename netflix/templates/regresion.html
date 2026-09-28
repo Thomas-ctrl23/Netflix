@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regresión Lineal - Netflix ML Studio</title>
+  <meta name="description" content="Gráfica y fórmula del modelo de Regresión Lineal para Netflix.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-top-right"></div>
+
+  <!-- Top Bar con botón de retorno al Selector -->
+  <div class="nav-bar-simple">
+    <div class="nav-container">
+      <a href="/" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Cambiar de Modelo (Volver al Selector)</span>
+      </a>
+      <span class="view-tag tag-reg">
+        <i class="fa-solid fa-chart-line"></i> Modelo: Regresión Lineal
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Content: Solo Fórmula, Evaluación Manual y Gráfica -->
+  <main class="main-wrapper">
+    
+    <!-- 1. SECCIÓN DE LA FÓRMULA -->
+    <section class="formula-card">
+      <div class="formula-header">
+        <span class="tag-pill"><i class="fa-solid fa-square-root-variable"></i> Fórmula del Modelo</span>
+        <span class="formula-type">Ecuación de la Recta (Regresión Lineal Simple)</span>
+      </div>
+
+      <div class="formula-display">
+        <div class="formula-general">
+          <span class="math-label">Forma General:</span>
+          <span class="math-expr">y = m · x + b</span>
+        </div>
+        
+        <div class="formula-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+        <div class="formula-netflix">
+          <span class="math-label">Fórmula Ajustada para Netflix:</span>
+          <h2 class="math-main">
+            Edad Recomendada = (<span class="val-m">0.0297</span> × Duración en min) + <span class="val-b">11.02</span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- Variables y Parámetros de la Fórmula -->
+      <div class="formula-vars-grid">
+        <div class="var-item">
+          <span class="var-badge badge-y">y</span>
+          <div class="var-info">
+            <strong>Edad Recomendada (target_age)</strong>
+            <span>Variable dependiente continua (en años)</span>
+          </div>
+        </div>
+
+        <div class="var-item">
+          <span class="var-badge badge-m">m</span>
+          <div class="var-info">
+            <strong>Pendiente = +0.0297</strong>
+            <span>Tasa de incremento por cada minuto de duración</span>
+          </div>
+        </div>
+
+        <div class="var-item">
+          <span class="var-badge badge-x">x</span>
+          <div class="var-info">
+            <strong>Duración (minutos)</strong>
+            <span>Variable predictora independiente</span>
+          </div>
+        </div>
+
+        <div class="var-item">
+          <span class="var-badge badge-b">b</span>
+          <div class="var-info">
+            <strong>Punto de Corte = 11.02 años</strong>
+            <span>Intersección con el eje Y a duración cero</span>
+          </div>
+        </div>
+
+        <div class="var-item item-r2">
+          <span class="var-badge badge-r2">R²</span>
+          <div class="var-info">
+            <strong>Coeficiente R² = {{ metricas.get('r2_test', 0.5026) }}</strong>
+            <span>Calidad del ajuste del modelo en datos de prueba</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. APARTADO DE EVALUACIÓN DE DATOS MANUALES (SIN MODIFICAR EL DATASET) -->
+    <section class="manual-data-card">
+      <div class="manual-card-header">
+        <div class="manual-title-group">
+          <i class="fa-solid fa-pen-to-square text-cyan"></i>
+          <div>
+            <h3>Agregar y Evaluar Datos Manuales</h3>
+            <span class="manual-subtitle">Prueba cualquier duración en la fórmula de regresión lineal</span>
+          </div>
+        </div>
+        <div class="safe-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Solo en Memoria: <strong>El dataset original no se modifica</strong></span>
+        </div>
+      </div>
+
+      <!-- Formulario de Entrada Manual -->
+      <form id="form-manual-data" class="manual-form">
+        <div class="manual-form-grid">
+          <div class="input-field">
+            <label for="manual-title"><i class="fa-solid fa-film"></i> Título / Nombre (Opcional):</label>
+            <input type="text" id="manual-title" class="manual-input" placeholder="Ej: Mi Película de Prueba">
+          </div>
+
+          <div class="input-field">
+            <label for="manual-duration"><i class="fa-solid fa-clock text-cyan"></i> Duración en minutos (x):</label>
+            <div class="duration-input-wrapper">
+              <input type="number" id="manual-duration" class="manual-input" min="1" max="500" value="120" required>
+              <span class="input-unit">min</span>
+            </div>
+          </div>
+
+          <div class="input-field btn-field">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn-calculate" id="btn-add-manual">
+              <i class="fa-solid fa-calculator"></i>
+              <span>Calcular con la Fórmula</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets rápidos -->
+        <div class="quick-presets">
+          <span class="presets-label">Valores rápidos:</span>
+          <button type="button" class="btn-preset" data-min="60">60 min</button>
+          <button type="button" class="btn-preset" data-min="90">90 min</button>
+          <button type="button" class="btn-preset" data-min="105">105 min</button>
+          <button type="button" class="btn-preset" data-min="120">120 min</button>
+          <button type="button" class="btn-preset" data-min="150">150 min</button>
+          <button type="button" class="btn-preset" data-min="180">180 min</button>
+        </div>
+      </form>
+
+      <!-- Resultado del Último Cálculo -->
+      <div class="manual-result-box" id="manual-result-box">
+        <div class="result-badge-col">
+          <div class="result-age-badge" id="res-badge">+13</div>
+        </div>
+        <div class="result-details-col">
+          <span class="res-sub">Resultado del Cálculo Manual:</span>
+          <h4 class="res-title" id="res-title">Edad Recomendada: <span class="text-cyan" id="res-age-number">14.58</span> años</h4>
+          <div class="res-equation">
+            <code>y = (0.0297 × <span id="res-calc-x">120</span>) + 11.02 = <strong id="res-calc-y">14.58</strong> años</code>
+          </div>
+        </div>
+        <div class="result-meta-col">
+          <span class="meta-label">Clasificación Netflix:</span>
+          <span class="meta-val" id="res-cat">PG-13 / TV-14</span>
+          <span class="meta-status"><i class="fa-solid fa-circle-check text-green"></i> No añadido al dataset</span>
+        </div>
+      </div>
+
+      <!-- Tabla de Puntos Manuales Ingresados en la Sesión -->
+      <div class="manual-table-section" id="manual-table-section" style="display: none;">
+        <div class="table-section-header">
+          <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Puntos Manuales (Temporales)</span>
+          <button type="button" class="btn-clear-table" id="btn-clear-manual">
+            <i class="fa-solid fa-trash-can"></i> Limpiar Puntos
+          </button>
+        </div>
+        <div class="manual-table-wrapper">
+          <table class="manual-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Título / Etiqueta</th>
+                <th>Duración (x)</th>
+                <th>Edad Calculada (y)</th>
+                <th>Clasificación</th>
+                <th>Fórmula Resuelta</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="manual-table-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SECCIÓN DE LA GRÁFICA -->
+    <section class="graph-card">
+      <div class="graph-card-header">
+        <div class="graph-title-group">
+          <i class="fa-solid fa-chart-line text-netflix"></i>
+          <div>
+            <h3>Gráfica de Regresión Lineal</h3>
+            <span class="graph-subtitle">Ajuste de la recta sobre las películas reales del catálogo</span>
+          </div>
+        </div>
+
+        <div class="graph-actions-group">
+          <div class="graph-legend">
+            <span class="legend-item">
+              <span class="legend-dot dot-cyan"></span>
+              Películas Reales (Muestra)
+            </span>
+            <span class="legend-item">
+              <span class="legend-line line-red"></span>
+              Línea Recta de Regresión: y = 0.0297x + 11.02
+            </span>
+          </div>
+          <a href="/api/regression-image" target="_blank" class="btn-hd-link">
+            <i class="fa-solid fa-up-right-from-square"></i> Abrir Gráfico HD
+          </a>
+        </div>
+      </div>
+
+      <div class="graph-frame">
+        <img src="/api/regression-image" alt="Gráfica de Regresión Lineal Netflix" id="img-regression-plot" class="img-regression">
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const M_PENDIENTE = 0.0297;
+    const B_INTERCEPTO = 11.02;
+    const manualPoints = [];
+
+    function clasificarEdad(edad) {
+      if (edad >= 17) {
+        return { badge: "+18", cat: "NC-17 / TV-MA (Solo Adultos)", color: "#E50914" };
+      } else if (edad >= 15.5) {
+        return { badge: "+16", cat: "TV-MA / R (Maduro)", color: "#ff4444" };
+      } else if (edad >= 11) {
+        return { badge: "+13", cat: "PG-13 / TV-14 (Guía Parental)", color: "#ffb703" };
+      } else if (edad >= 6.5) {
+        return { badge: "+7", cat: "TV-PG / PG (+7 años)", color: "#00d4ff" };
+      } else {
+        return { badge: "TP", cat: "TV-Y / G (Todos los públicos)", color: "#00e676" };
+      }
+    }
+
+    function evaluarDatoManual(titulo, duracionMin, agregarATabla = true) {
+      const x = parseFloat(duracionMin);
+      if (isNaN(x) || x <= 0) return;
+
+      const rawY = (M_PENDIENTE * x) + B_INTERCEPTO;
+      const y = Math.max(0, Math.min(18, rawY));
+      const info = clasificarEdad(y);
+
+      const resBadge = document.getElementById("res-badge");
+      const resAgeNum = document.getElementById("res-age-number");
+      const resCalcX = document.getElementById("res-calc-x");
+      const resCalcY = document.getElementById("res-calc-y");
+      const resCat = document.getElementById("res-cat");
+
+      if (resBadge) {
+        resBadge.innerText = info.badge;
+        resBadge.style.backgroundColor = info.color;
+        resBadge.style.boxShadow = `0 0 16px ${info.color}88`;
+      }
+      if (resAgeNum) resAgeNum.innerText = y.toFixed(2);
+      if (resCalcX) resCalcX.innerText = x;
+      if (resCalcY) resCalcY.innerText = y.toFixed(2);
+      if (resCat) resCat.innerText = info.cat;
+
+      if (agregarATabla) {
+        const item = {
+          id: Date.now(),
+          titulo: titulo ? titulo.trim() : `Prueba ${x} min`,
+          x: x,
+          y: y.toFixed(2),
+          cat: info.cat,
+          badge: info.badge,
+          color: info.color,
+          formula: `${y.toFixed(2)} = (0.0297 × ${x}) + 11.02`
+        };
+        manualPoints.unshift(item);
+        renderizarTablaManual();
+      }
+    }
+
+    function renderizarTablaManual() {
+      const tableSection = document.getElementById("manual-table-section");
+      const tableBody = document.getElementById("manual-table-body");
+      if (!tableSection || !tableBody) return;
+
+      if (manualPoints.length === 0) {
+        tableSection.style.display = "none";
+        tableBody.innerHTML = "";
+        return;
+      }
+
+      tableSection.style.display = "flex";
+      tableBody.innerHTML = manualPoints.map((p, idx) => `
+        <tr>
+          <td><code style="color: #9aa0a6;">#${idx + 1}</code></td>
+          <td><strong style="color: #ffffff;">${escapeHtml(p.titulo)}</strong></td>
+          <td><span style="color: #00d4ff; font-weight: 700;">${p.x} min</span></td>
+          <td><strong style="color: #00e676;">${p.y} años</strong></td>
+          <td><span style="background: ${p.color}22; color: ${p.color}; padding: 2px 7px; border-radius: 4px; font-weight: 700;">${p.badge}</span></td>
+          <td><code style="color: #9aa0a6; font-size: 11px;">${p.formula}</code></td>
+          <td>
+            <button class="btn-del-point" onclick="eliminarPuntoManual(${p.id})" title="Eliminar este punto">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function eliminarPuntoManual(id) {
+      const idx = manualPoints.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        manualPoints.splice(idx, 1);
+        renderizarTablaManual();
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const img = document.getElementById("img-regression-plot");
+      if (img) {
+        img.src = `/api/regression-image?t=${Date.now()}`;
+      }
+
+      evaluarDatoManual("Ejemplo Base", 120, false);
+
+      const form = document.getElementById("form-manual-data");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const titulo = document.getElementById("manual-title").value;
+          const duracion = document.getElementById("manual-duration").value;
+          evaluarDatoManual(titulo, duracion, true);
+        });
+      }
+
+      const presets = document.querySelectorAll(".btn-preset");
+      presets.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const min = btn.dataset.min;
+          const inputDur = document.getElementById("manual-duration");
+          const inputTitle = document.getElementById("manual-title");
+          if (inputDur) inputDur.value = min;
+          evaluarDatoManual(inputTitle ? inputTitle.value : "", min, true);
+        });
+      });
+
+      const btnClear = document.getElementById("btn-clear-manual");
+      if (btnClear) {
+        btnClear.addEventListener("click", () => {
+          manualPoints.length = 0;
+          renderizarTablaManual();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

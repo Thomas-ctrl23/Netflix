@@ -1,0 +1,83 @@
+{
+  "filas_originales": 8809,
+  "columnas_originales": [
+    "show_id",
+    "type",
+    "title",
+    "director",
+    "cast",
+    "country",
+    "date_added",
+    "release_year",
+    "rating",
+    "duration",
+    "listed_in",
+    "description"
+  ],
+  "nulos_por_columna_antes": {
+    "show_id": 0,
+    "type": 1,
+    "title": 2,
+    "director": 2636,
+    "cast": 826,
+    "country": 833,
+    "date_added": 12,
+    "release_year": 2,
+    "rating": 6,
+    "duration": 5,
+    "listed_in": 3,
+    "description": 3
+  },
+  "filas_limpias": 8579,
+  "filas_eliminadas": 230,
+  "porcentaje_retencion": 97.39,
+  "distribucion_ratings": {
+    "TV-MA": 3207,
+    "TV-14": 2160,
+    "TV-PG": 862,
+    "R": 799,
+    "PG-13": 490,
+    "TV-Y7": 334,
+    "TV-Y": 307,
+    "PG": 287,
+    "NR": 80,
+    "G": 41,
+    "TV-Y7-FV": 6,
+    "NC-17": 3,
+    "UR": 3
+  },
+  "resumen_edad": {
+    "min": 0.0,
+    "max": 18.0,
+    "promedio": 13.73,
+    "mediana": 14.0
+  },
+  "conteo_tipos": {
+    "Movie": 5999,
+    "TV Show": 2580
+  },
+  "top_paises": {
+    "United States": 3119,
+    "India": 999,
+    "Desconocido": 802,
+    "United Kingdom": 604,
+    "Japan": 257,
+    "Canada": 256,
+    "France": 210,
+    "South Korea": 210,
+    "Spain": 180,
+    "Mexico": 132
+  },
+  "top_generos": {
+    "Dramas": 1587,
+    "Comedies": 1204,
+    "Action & Adventure": 859,
+    "Documentaries": 788,
+    "International TV Shows": 765,
+    "Children & Family Movies": 555,
+    "Crime TV Shows": 399,
+    "Kids' TV": 349,
+    "Stand-Up Comedy": 331,
+    "Horror Movies": 275
+  }
+}

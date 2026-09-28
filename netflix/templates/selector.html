@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selección de Modelo ML - Netflix Studio</title>
+  <meta name="description" content="Pantalla de selección de modelos de Machine Learning para Netflix: Regresión Lineal vs Árbol de Decisiones.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="selector-body">
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-top-right"></div>
+  <div class="ambient-glow glow-bottom-center"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="netflix-logo-badge">
+          <span class="logo-n">N</span>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">NETFLIX <span class="brand-accent">ML STUDIO</span></h1>
+          <p class="brand-subtitle">Arquitectura MVC: Modelos, Vistas y Controladores</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="badge-mvc">
+          <i class="fa-solid fa-cubes"></i>
+          <span>Patrón MVC Activo</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Selector Hub -->
+  <main class="main-wrapper">
+    
+    <div class="selector-hero">
+      <span class="tag-pill"><i class="fa-solid fa-layer-group"></i> Panel de Control de Modelos</span>
+      <h2 class="selector-heading">¿Qué modelo deseas utilizar?</h2>
+      <p class="selector-subheading">
+        Selecciona entre el modelo de <strong>Regresión Lineal</strong> para predecir la edad recomendada de forma continua, o el modelo de <strong>Árbol de Decisiones</strong> para clasificar las categorías de audiencia oficiales de Netflix.
+      </p>
+    </div>
+
+    <!-- Models Selection Grid -->
+    <div class="models-grid">
+      
+      <!-- MODEL 1: REGRESIÓN LINEAL -->
+      <div class="model-choice-card card-regression">
+        <div class="model-card-badge badge-reg">
+          <i class="fa-solid fa-chart-line"></i> Modelo 1
+        </div>
+
+        <div class="model-icon-box box-reg">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+
+        <h3 class="model-title">Regresión Lineal</h3>
+        <span class="model-paradigm">Regresión Numérica Continua</span>
+
+        <p class="model-summary">
+          Estima el valor continuo de la <strong>Edad Recomendada (target_age)</strong> a partir de la duración del contenido mediante ajuste lineal por mínimos cuadrados ordinarios.
+        </p>
+
+        <!-- Píldoras de Métricas Clave -->
+        <div class="model-spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">Fórmula:</span>
+            <strong class="spec-val text-cyan">y = 0.0297x + 11.02</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Coeficiente R²:</span>
+            <strong class="spec-val text-green">{{ metricas_reg.get('r2_test', 0.5026) }}</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Error MAE:</span>
+            <strong class="spec-val text-gold">±{{ metricas_reg.get('mae_test', 2.27) }} años</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Gráfica:</span>
+            <strong class="spec-val text-white">Dispersión 2D + Recta</strong>
+          </div>
+        </div>
+
+        <a href="/regresion" class="btn-select-model btn-reg">
+          <span>Abrir Regresión Lineal</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- MODEL 2: ÁRBOL DE DECISIONES -->
+      <div class="model-choice-card card-tree">
+        <div class="model-card-badge badge-tree">
+          <i class="fa-solid fa-sitemap"></i> Modelo 2
+        </div>
+
+        <div class="model-icon-box box-tree">
+          <i class="fa-solid fa-network-wired"></i>
+        </div>
+
+        <h3 class="model-title">Árbol de Decisiones</h3>
+        <span class="model-paradigm">Clasificación Supervisada Multiclase</span>
+
+        <p class="model-summary">
+          Predice la <strong>Clasificación Oficial ('rating')</strong> como TV-MA, TV-14, PG-13 o TV-Y mediante reglas lógicas de decisión particionadas por país, género, tipo y duración.
+        </p>
+
+        <!-- Píldoras de Métricas Clave -->
+        <div class="model-spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">Algoritmo:</span>
+            <strong class="spec-val text-gold">DecisionTreeClassifier</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Accuracy Test:</span>
+            <strong class="spec-val text-green">{{ metricas_arb.get('accuracy_test', 0.44) }}</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Profundidad:</span>
+            <strong class="spec-val text-cyan">{{ metricas_arb.get('profundidad_maxima', 3) }} niveles</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Gráfica:</span>
+            <strong class="spec-val text-white">Matriz de Confusión</strong>
+          </div>
+        </div>
+
+        <a href="/arbol" class="btn-select-model btn-tree">
+          <span>Abrir Árbol de Decisiones</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- MVC Architecture Diagram Footer Card -->
+    <div class="mvc-info-card">
+      <div class="mvc-info-header">
+        <i class="fa-solid fa-diagram-project text-cyan"></i>
+        <h4>Arquitectura MVC del Proyecto</h4>
+      </div>
+      <div class="mvc-columns">
+        <div class="mvc-col">
+          <span class="mvc-badge badge-m-mvc">M</span>
+          <strong>Modelos (models/)</strong>
+          <p>Lógica de negocio, limpieza de datos, entrenamiento de Regresión Lineal y Árbol de Decisiones.</p>
+        </div>
+        <div class="mvc-col">
+          <span class="mvc-badge badge-v-mvc">V</span>
+          <strong>Vistas (views/templates)</strong>
+          <p>Pantalla de selección, vista de regresión con gráfica y vista de árbol con matriz de confusión.</p>
+        </div>
+        <div class="mvc-col">
+          <span class="mvc-badge badge-c-mvc">C</span>
+          <strong>Controlador (controllers/)</strong>
+          <p>Rutas HTTP y mediador que conecta las peticiones del usuario con el modelo correspondiente.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

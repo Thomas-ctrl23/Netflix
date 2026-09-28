@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Árbol de Decisiones - Netflix ML Studio</title>
+  <meta name="description" content="Árbol de Decisiones para Netflix: Gráfica 2D escalonada y Clasificador Multivariable con Matriz de Confusión.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-top-right"></div>
+
+  <!-- Top Bar con botón de retorno al Selector -->
+  <div class="nav-bar-simple">
+    <div class="nav-container">
+      <a href="/" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Cambiar de Modelo (Volver al Selector)</span>
+      </a>
+      <span class="view-tag tag-tree">
+        <i class="fa-solid fa-sitemap"></i> Modelo: Árbol de Decisiones (Decision Tree)
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+
+    <div id="wrapper-sec-multi">
+
+      <div class="section-divider-title">
+        <h2>
+          <i class="fa-solid fa-network-wired text-gold"></i>
+          Clasificador Multivariable & Matriz de Confusión
+        </h2>
+        <span>Clasificación del rating oficial ('rating') combinando Tipo, Género, País, Año y Duración</span>
+      </div>
+
+      <!-- 1. MÉTRICAS DEL CLASIFICADOR -->
+      <section class="formula-card">
+        <div class="formula-header">
+          <span class="tag-pill tag-pill-tree"><i class="fa-solid fa-sitemap"></i> Clasificador Supervisado</span>
+          <span class="formula-type">DecisionTreeClassifier (max_depth={{ metricas.get('profundidad_maxima', 3) }}, min_samples_leaf=5)</span>
+        </div>
+
+        <div class="formula-display">
+          <div class="formula-general">
+            <span class="math-label">Objetivo de Clasificación:</span>
+            <span class="math-expr text-gold">Predecir 'rating' oficial</span>
+          </div>
+          
+          <div class="formula-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+          <div class="formula-netflix">
+            <span class="math-label">Criterio de División Multivariable:</span>
+            <h2 class="math-main">
+              Partición Gini / Entropía sobre Género, País, Duración y Año
+            </h2>
+          </div>
+        </div>
+
+        <!-- Métricas Clave del Clasificador -->
+        <div class="formula-vars-grid">
+          <div class="var-item">
+            <span class="var-badge badge-m">Acc</span>
+            <div class="var-info">
+              <strong>Accuracy Test: {{ metricas.get('accuracy_test', 0.44) }}</strong>
+              <span>Exactitud general sobre 1,716 registros de prueba</span>
+            </div>
+          </div>
+
+          <div class="var-item">
+            <span class="var-badge badge-r2">F1</span>
+            <div class="var-info">
+              <strong>F1-Score: {{ metricas.get('f1_test', 0.43) }}</strong>
+              <span>Media armónica ponderada por clase</span>
+            </div>
+          </div>
+
+          <div class="var-item">
+            <span class="var-badge badge-b">Prof</span>
+            <div class="var-info">
+              <strong>Profundidad: {{ metricas.get('profundidad_maxima', 3) }} niveles</strong>
+              <span>Estructura de ramificación del diagrama</span>
+            </div>
+          </div>
+
+          <div class="var-item">
+            <span class="var-badge badge-x">Hojas</span>
+            <div class="var-info">
+              <strong>Nodos Hoja: {{ metricas.get('n_hojas', 8) }}</strong>
+              <span>Puntos terminales de clasificación</span>
+            </div>
+          </div>
+
+          <div class="var-item item-r2">
+            <span class="var-badge badge-y">Nodos</span>
+            <div class="var-info">
+              <strong>Total Nodos: {{ metricas.get('total_nodos', 15) }}</strong>
+              <span>Cantidad exacta de nodos del árbol</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. CLASIFICACIÓN MANUAL MULTIVARIABLE -->
+      <section class="manual-data-card">
+        <div class="manual-card-header">
+          <div class="manual-title-group">
+            <i class="fa-solid fa-pen-to-square text-gold"></i>
+            <div>
+              <h3>Clasificación Manual con el Árbol (Multivariable)</h3>
+              <span class="manual-subtitle">Ingresa características y el árbol descenderá por sus ramas para clasificar el contenido</span>
+            </div>
+          </div>
+          <div class="safe-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Solo en Memoria: <strong>El dataset original no se modifica</strong></span>
+          </div>
+        </div>
+
+        <form id="form-tree-multi" class="manual-form">
+          <div class="manual-form-grid-tree">
+            
+            <div class="input-field">
+              <label for="multi-title"><i class="fa-solid fa-film"></i> Título (Opcional):</label>
+              <input type="text" id="multi-title" class="manual-input" placeholder="Ej: Película Familiar">
+            </div>
+
+            <div class="input-field">
+              <label for="multi-type"><i class="fa-solid fa-layer-group"></i> Tipo:</label>
+              <select id="multi-type" class="manual-input">
+                <option value="Movie" selected>Película (Movie)</option>
+                <option value="TV Show">Serie (TV Show)</option>
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="multi-genre"><i class="fa-solid fa-masks-theater text-gold"></i> Género Principal:</label>
+              <select id="multi-genre" class="manual-input">
+                <option value="Children & Family Movies">Children & Family Movies (Infantil)</option>
+                <option value="Dramas" selected>Dramas</option>
+                <option value="Comedies">Comedies (Comedias)</option>
+                <option value="Action & Adventure">Action & Adventure</option>
+                <option value="Documentaries">Documentaries</option>
+                <option value="Horror Movies">Horror Movies (Terror)</option>
+                <option value="Crime TV Shows">Crime TV Shows</option>
+                <option value="Kids' TV">Kids' TV</option>
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="multi-country"><i class="fa-solid fa-globe"></i> País:</label>
+              <select id="multi-country" class="manual-input">
+                <option value="United States" selected>Estados Unidos</option>
+                <option value="Spain">España</option>
+                <option value="Mexico">México</option>
+                <option value="United Kingdom">Reino Unido</option>
+                <option value="Japan">Japón</option>
+                <option value="France">Francia</option>
+                <option value="India">India</option>
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="multi-duration"><i class="fa-solid fa-clock text-cyan"></i> Duración (min o temp):</label>
+              <input type="number" id="multi-duration" class="manual-input" value="95" min="1" max="300" required>
+            </div>
+
+            <div class="input-field btn-field">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn-calculate btn-calculate-tree" id="btn-multi-predict">
+                <i class="fa-solid fa-network-wired"></i>
+                <span>Evaluar con el Árbol</span>
+              </button>
+            </div>
+
+          </div>
+        </form>
+
+        <!-- Resultado de la Clasificación Multivariable -->
+        <div class="manual-result-box" id="multi-result-box">
+          <div class="result-badge-col">
+            <div class="result-age-badge" id="multi-res-badge" style="background: #ffb703;">PG-13</div>
+          </div>
+          <div class="result-details-col">
+            <span class="res-sub">Clasificación Asignada por el Árbol:</span>
+            <h4 class="res-title" id="multi-res-title">Rating Predicho: <span class="text-gold" id="multi-res-rating">PG-13</span></h4>
+            <div class="res-equation">
+              <span>Confianza estimada del nodo hoja: <strong id="multi-res-conf" class="text-green">64.5%</strong></span>
+            </div>
+          </div>
+          <div class="result-meta-col">
+            <span class="meta-label">Decisión Supervisada:</span>
+            <span class="meta-val" id="multi-res-branch">Rama Nivel 10</span>
+            <span class="meta-status"><i class="fa-solid fa-circle-check text-green"></i> No añadido al dataset</span>
+          </div>
+        </div>
+
+        <!-- Tabla Historial Multivariable -->
+        <div class="manual-table-section" id="multi-table-section" style="display: none;">
+          <div class="table-section-header">
+            <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Evaluaciones Multivariables</span>
+            <button type="button" class="btn-clear-table" id="btn-clear-multi">
+              <i class="fa-solid fa-trash-can"></i> Limpiar Historial
+            </button>
+          </div>
+          <div class="manual-table-wrapper">
+            <table class="manual-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Título</th>
+                  <th>Tipo</th>
+                  <th>Género</th>
+                  <th>País</th>
+                  <th>Duración</th>
+                  <th>Rating Predicho</th>
+                  <th>Confianza</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="multi-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. GRÁFICA DEL MODELO (MATRIZ DE CONFUSIÓN & DIAGRAMA DE RAMAS) -->
+      <section class="graph-card">
+        <div class="graph-card-header">
+          <div class="graph-title-group">
+            <i class="fa-solid fa-table-cells text-netflix"></i>
+            <div>
+              <h3>Matriz de Confusión y Estructura del Árbol</h3>
+              <span class="graph-subtitle" id="multi-graph-subtitle">Comparativa entre las etiquetas reales vs las predichas por el árbol</span>
+            </div>
+          </div>
+
+          <div class="graph-actions-group">
+            <div class="graph-switcher-tabs">
+              <button type="button" class="btn-graph-tab active" data-multi-img="/api/images/arbol-matriz" data-multi-sub="Comparativa entre las etiquetas reales vs las predichas por el árbol" data-multi-legend="Diagonal = Aciertos Correctos">
+                <i class="fa-solid fa-table-cells"></i> Matriz de Confusión
+              </button>
+              <button type="button" class="btn-graph-tab" data-multi-img="/api/images/arbol-diagrama" data-multi-sub="Estructura Jerárquica de Nodos, Divisiones y Hojas del Árbol" data-multi-legend="Estructura de Divisiones del Árbol">
+                <i class="fa-solid fa-diagram-project"></i> Diagrama de Ramas
+              </button>
+            </div>
+
+            <div class="graph-legend">
+              <span class="legend-item">
+                <span class="legend-dot dot-cyan"></span>
+                <span id="multi-legend-text">Diagonal = Aciertos Correctos</span>
+              </span>
+            </div>
+
+            <a href="/api/images/arbol-matriz" target="_blank" class="btn-hd-link" id="multi-hd-link">
+              <i class="fa-solid fa-up-right-from-square"></i> Abrir Gráfico HD
+            </a>
+          </div>
+        </div>
+
+        <div class="graph-frame">
+          <img src="/api/images/arbol-matriz" alt="Matriz de Confusión del Árbol de Decisiones" id="multi-graph-img" class="img-regression">
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+    // Arrays en memoria (sin tocar archivos del dataset)
+    const pointsMulti = [];
+
+    // ==============================================================
+    // LÓGICA DEL MÓDULO MULTIVARIABLE
+    // ==============================================================
+    async function clasificarConArbolMulti(titulo, tipo, genero, pais, duracion, agregar = true) {
+      const payload = {
+        tipo: tipo,
+        genero: genero,
+        pais: pais,
+        duracion: parseInt(duracion),
+        anio: 2022
+      };
+
+      try {
+        const res = await fetch("/api/predict/arbol", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (json.status === "success" && json.data) {
+          const d = json.data;
+
+          const badgeEl = document.getElementById("multi-res-badge");
+          const ratingEl = document.getElementById("multi-res-rating");
+          const confEl = document.getElementById("multi-res-conf");
+
+          if (badgeEl) {
+            badgeEl.innerText = d.rating_predicho;
+            badgeEl.style.backgroundColor = d.color || "#ffb703";
+            badgeEl.style.boxShadow = `0 0 16px ${d.color}88`;
+          }
+          if (ratingEl) ratingEl.innerText = d.rating_predicho;
+          if (confEl) confEl.innerText = `${d.confianza}%`;
+
+          if (agregar) {
+            pointsMulti.unshift({
+              id: Date.now(),
+              titulo: titulo ? titulo.trim() : `Prueba ${genero}`,
+              tipo: tipo,
+              genero: genero,
+              pais: pais,
+              duracion: duracion,
+              rating: d.rating_predicho,
+              color: d.color,
+              confianza: d.confianza
+            });
+            renderizarTablaMulti();
+          }
+        }
+      } catch (err) {
+        console.error("Error al predecir con el árbol multivariable:", err);
+      }
+    }
+
+    function renderizarTablaMulti() {
+      const sec = document.getElementById("multi-table-section");
+      const body = document.getElementById("multi-table-body");
+      if (!sec || !body) return;
+
+      if (pointsMulti.length === 0) {
+        sec.style.display = "none";
+        body.innerHTML = "";
+        return;
+      }
+
+      sec.style.display = "flex";
+      body.innerHTML = pointsMulti.map((p, idx) => `
+        <tr>
+          <td><code style="color: #9aa0a6;">#${idx + 1}</code></td>
+          <td><strong style="color: #ffffff;">${escapeHtml(p.titulo)}</strong></td>
+          <td>${p.tipo}</td>
+          <td><span style="color: #ffb703;">${p.genero}</span></td>
+          <td>${p.pais}</td>
+          <td>${p.duracion} min</td>
+          <td><span style="background: ${p.color}22; color: ${p.color}; padding: 3px 8px; border-radius: 4px; font-weight: 700;">${p.rating}</span></td>
+          <td><strong style="color: #00e676;">${p.confianza}%</strong></td>
+          <td>
+            <button class="btn-del-point" onclick="eliminarPuntoMulti(${p.id})">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function eliminarPuntoMulti(id) {
+      const idx = pointsMulti.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        pointsMulti.splice(idx, 1);
+        renderizarTablaMulti();
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // ==============================================================
+    // INICIALIZACIÓN Y EVENT LISTENERS
+    // ==============================================================
+    window.addEventListener("DOMContentLoaded", () => {
+      // 1. Formulario Multivariable
+      const formMulti = document.getElementById("form-tree-multi");
+      if (formMulti) {
+        formMulti.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const titulo = document.getElementById("multi-title").value;
+          const tipo = document.getElementById("multi-type").value;
+          const genero = document.getElementById("multi-genre").value;
+          const pais = document.getElementById("multi-country").value;
+          const duracion = document.getElementById("multi-duration").value;
+          clasificarConArbolMulti(titulo, tipo, genero, pais, duracion, true);
+        });
+      }
+
+      // Limpiar Multivariable
+      const btnClearMulti = document.getElementById("btn-clear-multi");
+      if (btnClearMulti) {
+        btnClearMulti.addEventListener("click", () => {
+          pointsMulti.length = 0;
+          renderizarTablaMulti();
+        });
+      }
+
+      // 4. Conmutador de la Gráfica Multivariable (Matriz vs. Diagrama)
+      const multiTabs = document.querySelectorAll(".btn-graph-tab");
+      const multiImg = document.getElementById("multi-graph-img");
+      const multiSub = document.getElementById("multi-graph-subtitle");
+      const multiLegend = document.getElementById("multi-legend-text");
+      const multiHdLink = document.getElementById("multi-hd-link");
+
+      multiTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          multiTabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+
+          const imgSrc = tab.getAttribute("data-multi-img");
+          const sub = tab.getAttribute("data-multi-sub");
+          const leg = tab.getAttribute("data-multi-legend");
+
+          if (multiImg) multiImg.src = `${imgSrc}?t=${Date.now()}`;
+          if (multiSub) multiSub.innerText = sub;
+          if (multiLegend) multiLegend.innerText = leg;
+          if (multiHdLink) multiHdLink.href = imgSrc;
+        });
+      });
+
+      // Evaluaciones de ejemplo iniciales (en memoria)
+      clasificarConArbolMulti("Película Familiar", "Movie", "Children & Family Movies", "United States", 95, false);
+    });
+  </script>
+</body>
+</html>
