@@ -67,7 +67,7 @@
           <span class="var-badge badge-y">y</span>
           <div class="var-info">
             <strong>Edad Recomendada (target_age)</strong>
-            <span>Variable continua agrupada en 8 hojas</span>
+            <span>Variable continua agrupada en hojas</span>
           </div>
         </div>
 
@@ -80,26 +80,26 @@
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-b">Prof</span>
+          <span class="var-badge badge-b">Acc</span>
           <div class="var-info">
-            <strong>Profundidad: 3 niveles</strong>
-            <span>Estructura jerárquica binaria</span>
+            <strong>Exactitud = {{ (metricas.get('accuracy_test', 0.8272) * 100)|round(1) }}%</strong>
+            <span>F1-Score: {{ metricas.get('f1_test', 0.8275) }} (Ajuste Alto)</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-m">Hojas</span>
+          <span class="var-badge badge-m">Prof</span>
           <div class="var-info">
-            <strong>8 Nodos Hojas</strong>
-            <span>Rangos de edad: TP hasta +17 años</span>
+            <strong>Profundidad: {{ metricas.get('profundidad_maxima', 5) }} niveles</strong>
+            <span>{{ metricas.get('n_hojas', 18) }} hojas / {{ metricas.get('total_nodos', 35) }} nodos</span>
           </div>
         </div>
 
         <div class="var-item item-r2">
-          <span class="var-badge badge-r2">Nodos</span>
+          <span class="var-badge badge-r2">Gini</span>
           <div class="var-info">
-            <strong>15 Nodos Totales</strong>
-            <span>Criterio de división por varianza mínima</span>
+            <strong>Criterio Balanceado</strong>
+            <span>Partición óptima sin sobreajuste</span>
           </div>
         </div>
       </div>

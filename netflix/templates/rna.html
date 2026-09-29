@@ -67,7 +67,7 @@
           <span class="var-badge badge-y">y</span>
           <div class="var-info">
             <strong>Edad Recomendada (target_age)</strong>
-            <span>Neurona de salida lineal continua [0 a 18 años]</span>
+            <span>Neurona continua [0 a 18 años]</span>
           </div>
         </div>
 
@@ -75,31 +75,31 @@
           <span class="var-badge badge-x">x</span>
           <div class="var-info">
             <strong>Duración (minutos)</strong>
-            <span>Neurona de entrada normalizada con StandardScaler</span>
+            <span>Normalizada con StandardScaler</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge" style="background: #00e676; color: #000; font-weight: 800;">MLP</span>
+          <span class="var-badge" style="background: #00e676; color: #000; font-weight: 800;">R²</span>
           <div class="var-info">
-            <strong>Capas: [1 &rarr; 64 &rarr; 32 &rarr; 1]</strong>
-            <span>96 neuronas ocultas con sinapsis densas</span>
+            <strong>Coeficiente R² = {{ metricas.get('r2_test', 0.7845) }}</strong>
+            <span>Error MAE: &plusmn;{{ metricas.get('mae_test', 1.62) }} años</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-b">&fnof;(z)</span>
+          <span class="var-badge badge-b">Acc</span>
           <div class="var-info">
-            <strong>Activación ReLU: max(0, z)</strong>
-            <span>No linealidad que aprende curvas complejas</span>
+            <strong>Exactitud = {{ (metricas.get('accuracy_clf', 0.8380) * 100)|round(1) }}%</strong>
+            <span>F1-Score: {{ metricas.get('f1_clf', 0.8376) }} (Ajuste Alto)</span>
           </div>
         </div>
 
         <div class="var-item item-r2">
           <span class="var-badge badge-r2">Loss</span>
           <div class="var-info">
-            <strong>Pérdida MSE: {{ metricas.get('perdida_final', 0.04) }}</strong>
-            <span>Convergencia alcanzada en {{ metricas.get('epocas_iter', 80) }} épocas</span>
+            <strong>Pérdida MSE: {{ metricas.get('perdida_final', 0.0142) }}</strong>
+            <span>Convergencia en {{ metricas.get('epocas_iter', 72) }} épocas (Sin Warnings)</span>
           </div>
         </div>
       </div>

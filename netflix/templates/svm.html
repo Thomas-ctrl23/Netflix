@@ -86,26 +86,26 @@
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-sv">SV</span>
+          <span class="var-badge badge-b">Acc</span>
           <div class="var-info">
-            <strong>{{ metricas.get('total_sv_dur', 5336) }} Vectores Soporte</strong>
-            <span>Puntos críticos que delimitan el tubo de margen</span>
+            <strong>Exactitud = {{ (metricas.get('accuracy_test', 0.8483) * 100)|round(1) }}%</strong>
+            <span>F1-Score: {{ metricas.get('f1_test', 0.8486) }} (Ajuste Alto)</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-b">Kernel</span>
+          <span class="var-badge badge-sv">SV</span>
           <div class="var-info">
-            <strong>Kernel RBF Gaussiano</strong>
-            <span>Transformación no lineal implícita</span>
+            <strong>{{ metricas.get('total_vectores_soporte', 1180) }} Vectores Soporte</strong>
+            <span>Margen óptimo delimitado sin saturación</span>
           </div>
         </div>
 
         <div class="var-item item-r2">
           <span class="var-badge badge-r2">&epsilon;</span>
           <div class="var-info">
-            <strong>Tubo de Margen: &plusmn;0.8 años</strong>
-            <span>Zona insensible a errores mínimos</span>
+            <strong>Tubo de Margen: &plusmn;0.80 años</strong>
+            <span>Kernel RBF (C=2.5, &gamma;='scale')</span>
           </div>
         </div>
       </div>

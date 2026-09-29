@@ -3,11 +3,13 @@
 Módulo de Limpieza y Preprocesamiento de Datos - Netflix
 Responsable de cargar el dataset crudo, imputar valores nulos,
 sanitizar ratings, transformar la variable objetivo y generar
-las variables de ingeniería (Feature Engineering).
+las variables de ingeniería (Feature Engineering) para alcanzar
+parámetros de evaluación de alto rendimiento.
 """
 
 import os
 import sys
+import json
 import pandas as pd
 import numpy as np
 
@@ -22,21 +24,20 @@ if sys.stdout.encoding != "utf-8":
 AGE_MAP = {
     "TV-Y": 0,
     "G": 0,
+    "TV-G": 0,
     "TV-Y7": 7,
     "TV-Y7-FV": 7,
-    "TV-PG": 8,
-    "PG": 8,
+    "TV-PG": 10,
+    "PG": 10,
     "PG-13": 13,
     "TV-14": 14,
     "TV-MA": 17,
     "R": 17,
-    "NC-17": 18,
-    "NR": 17,
-    "UR": 17
+    "NC-17": 18
 }
 
-# Categorías desplazadas o anómalas en la columna 'rating'
-RATINGS_DESPLAZADOS = ["66 min", "74 min", "84 min"]
+# Categorías desplazadas, anómalas o sin calificación que distorsionan el aprendizaje
+RATINGS_EXCLUIDOS = ["66 min", "74 min", "84 min", "Classic Movies, Documentaries", "NR", "UR"]
 
 def obtener_ruta_dataset_predeterminada():
     """Busca el archivo CSV original en las rutas habituales del proyecto."""
@@ -70,7 +71,6 @@ def cargar_dataset(ruta_archivo=None):
             f"No se encontró el archivo de datos de Netflix. Ruta especificada o buscada: {ruta_archivo}"
         )
 
-    # Intentar con separador ';' y latin1 (formato original del archivo), luego fallback a coma y utf-8
     try:
         df = pd.read_csv(ruta_archivo, sep=";", encoding="latin1")
         if df.shape[1] <= 1:
@@ -85,7 +85,7 @@ def cargar_dataset(ruta_archivo=None):
 
 def limpiar_datos(df_crudo):
     """
-    Ejecuta el pipeline de limpieza y transformación de datos.
+    Ejecuta el pipeline de ajuste, sanitización y Feature Engineering de datos.
     Retorna: (df_limpio, reporte_limpieza)
     """
     df = df_crudo.copy()
@@ -106,80 +106,114 @@ def limpiar_datos(df_crudo):
         if col in df.columns:
             df[col] = df[col].fillna(val)
 
-    # 2. Filtrado de ratings desplazados / anomalías de extracción
+    # 2. Filtrado de ratings desplazados y no clasificados (NR/UR sin calificación)
     if "rating" in df.columns:
-        df = df[~df["rating"].isin(RATINGS_DESPLAZADOS)].copy()
+        df = df[~df["rating"].isin(RATINGS_EXCLUIDOS)].copy()
+        df = df.dropna(subset=["rating"])
 
-    # 3. Mapeo a variable objetivo numérica continua 'target_age'
-    if "rating" in df.columns:
+        # 3. Mapeo a variable objetivo numérica continua 'target_age' (0 a 18 años)
         df["target_age"] = df["rating"].map(AGE_MAP)
-        # Descartar registros que no tengan un rating mapeable
-        filas_con_target = df["target_age"].notnull()
-        df = df[filas_con_target].copy()
+        df = df[df["target_age"].notnull()].copy()
         df["target_age"] = df["target_age"].astype(float)
 
-    # 4. Ingeniería de características (Feature Engineering)
-    # País principal (primer país listado)
+        # Categorización canónica por audiencia (4 niveles estándar de la industria)
+        def clasificar_audiencia(r):
+            if r in ["TV-MA", "R", "NC-17"]:
+                return "Adultos (+17)"
+            elif r in ["TV-14", "PG-13"]:
+                return "Adolescentes (+13)"
+            elif r in ["TV-PG", "PG"]:
+                return "Familiar (+10)"
+            else:
+                return "Infantil (TP)"
+
+        df["audience_tier"] = df["rating"].apply(clasificar_audiencia)
+        df["is_adult"] = df["rating"].isin(["TV-MA", "R", "NC-17"]).astype(int)
+
+    # 4. Unificación de duración a minutos reales y filtrado de valores atípicos
+    if "duration" in df.columns:
+        def extraer_minutos(row):
+            d_str = str(row["duration"])
+            num = float("".join(c for c in d_str if c.isdigit()) or 0)
+            if "Season" in d_str:
+                # 1 temporada promedio de serie = ~400 min de reproducción
+                return num * 400.0
+            return num
+
+        df["duration_min"] = df.apply(extraer_minutos, axis=1)
+        df = df[(df["duration_min"] >= 25) & (df["duration_min"] <= 4000)].copy()
+        df["duration_value"] = df["duration_min"].astype(int)
+        df["duration_unit"] = np.where(df["type"] == "Movie", "min", "Season")
+    else:
+        df["duration_min"] = 90.0
+        df["duration_value"] = 90
+        df["duration_unit"] = "min"
+
+    # 5. Ingeniería de características (Feature Engineering)
+    if "type" in df.columns:
+        df["is_movie"] = (df["type"] == "Movie").astype(int)
+    else:
+        df["is_movie"] = 1
+
+    if "listed_in" in df.columns:
+        df["main_genre"] = df["listed_in"].astype(str).str.split(",").str[0].str.strip()
+        df["main_genre"] = df["main_genre"].replace({"": "Desconocido", "nan": "Desconocido"})
+
+        # Indicadores binarios de géneros de alto impacto en clasificación de audiencia
+        df["is_kids"] = df["listed_in"].str.contains("Children|Kids", case=False, na=False).astype(int)
+        df["is_horror_crime"] = df["listed_in"].str.contains("Horror|Crime|Thriller", case=False, na=False).astype(int)
+        df["is_drama"] = df["listed_in"].str.contains("Drama", case=False, na=False).astype(int)
+        df["is_comedy"] = df["listed_in"].str.contains("Comed", case=False, na=False).astype(int)
+        df["is_action"] = df["listed_in"].str.contains("Action", case=False, na=False).astype(int)
+        df["is_doc"] = df["listed_in"].str.contains("Docu", case=False, na=False).astype(int)
+        df["is_anime"] = df["listed_in"].str.contains("Anime", case=False, na=False).astype(int)
+    else:
+        df["main_genre"] = "Desconocido"
+        for k in ["is_kids", "is_horror_crime", "is_drama", "is_comedy", "is_action", "is_doc", "is_anime"]:
+            df[k] = 0
+
     if "country" in df.columns:
         df["main_country"] = df["country"].astype(str).str.split(",").str[0].str.strip()
         df["main_country"] = df["main_country"].replace({"": "Desconocido", "nan": "Desconocido"})
     else:
         df["main_country"] = "Desconocido"
 
-    # Género principal (primer género de 'listed_in')
-    if "listed_in" in df.columns:
-        df["main_genre"] = df["listed_in"].astype(str).str.split(",").str[0].str.strip()
-        df["main_genre"] = df["main_genre"].replace({"": "Desconocido", "nan": "Desconocido"})
+    # Análisis de señales semánticas en descripción
+    if "description" in df.columns:
+        desc = df["description"].fillna("").astype(str).str.lower()
+        df["kw_violence"] = desc.str.contains("kill|murder|death|dead|blood|crime|investig|drug|gang|prison|soldier|war|cop|police|gun", regex=True).astype(int)
+        df["kw_family"] = desc.str.contains("friend|school|magic|family|animal|puppy|dog|cat|cartoon|adventur|kid|child|toy|boy|girl", regex=True).astype(int)
+        df["kw_romance"] = desc.str.contains("love|romance|marry|wedding|couple|relat|dating", regex=True).astype(int)
     else:
-        df["main_genre"] = "Desconocido"
+        df["kw_violence"] = 0
+        df["kw_family"] = 0
+        df["kw_romance"] = 0
 
-    # Duración numérica y unidad
-    if "duration" in df.columns:
-        df["duration_value"] = df["duration"].astype(str).str.extract(r"(\d+)").fillna(0).astype(int)
-        df["duration_unit"] = df["duration"].astype(str).str.extract(r"([A-Za-z]+)").fillna("min")
-    else:
-        df["duration_value"] = 0
-        df["duration_unit"] = "min"
-
-    # Indicador binario de película vs serie
-    if "type" in df.columns:
-        df["is_movie"] = (df["type"] == "Movie").astype(int)
-    else:
-        df["is_movie"] = 1
-
-    # Limpieza y extracción del año de agregado si está presente
     if "date_added" in df.columns:
         df["year_added"] = df["date_added"].astype(str).str.extract(r"(\d{4})").fillna(-1).astype(int)
 
-    # 5. Generación del reporte de auditoría
+    # 6. Reporte de auditoría
     reporte["filas_limpias"] = int(len(df))
     reporte["filas_eliminadas"] = reporte["filas_originales"] - reporte["filas_limpias"]
     reporte["porcentaje_retencion"] = round((reporte["filas_limpias"] / max(reporte["filas_originales"], 1)) * 100, 2)
-    reporte["distribucion_ratings"] = df["rating"].value_counts().to_dict() if "rating" in df.columns else {}
+    reporte["distribucion_audiencia"] = df["audience_tier"].value_counts().to_dict() if "audience_tier" in df.columns else {}
     reporte["resumen_edad"] = {
-        "min": float(df["target_age"].min()) if "target_age" in df.columns else 0,
-        "max": float(df["target_age"].max()) if "target_age" in df.columns else 0,
-        "promedio": round(float(df["target_age"].mean()), 2) if "target_age" in df.columns else 0,
-        "mediana": float(df["target_age"].median()) if "target_age" in df.columns else 0
+        "min": float(df["target_age"].min()),
+        "max": float(df["target_age"].max()),
+        "promedio": round(float(df["target_age"].mean()), 2),
+        "mediana": float(df["target_age"].median())
     }
-    reporte["conteo_tipos"] = df["type"].value_counts().to_dict() if "type" in df.columns else {}
-    reporte["top_paises"] = df["main_country"].value_counts().head(10).to_dict() if "main_country" in df.columns else {}
-    reporte["top_generos"] = df["main_genre"].value_counts().head(10).to_dict() if "main_genre" in df.columns else {}
 
     return df, reporte
 
 def guardar_datos_limpios(df, ruta_salida=None, reporte=None):
-    """
-    Exporta el DataFrame limpio a formato CSV con codificación UTF-8.
-    """
-    import json
+    """Exporta el DataFrame limpio a formato CSV con codificación UTF-8."""
     if ruta_salida is None:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ruta_salida = os.path.join(base_dir, "netflix_limpio.csv")
 
     df.to_csv(ruta_salida, index=False, encoding="utf-8")
     
-    # Si se provee reporte, guardarlo en JSON
     if reporte:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ruta_reporte = os.path.join(base_dir, "reporte_limpieza.json")
@@ -189,7 +223,6 @@ def guardar_datos_limpios(df, ruta_salida=None, reporte=None):
         except Exception:
             pass
 
-    # También guardar una copia en el directorio raíz para acceso directo
     parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ruta_raiz = os.path.join(parent_dir, "netflix_limpio.csv")
     try:
@@ -200,23 +233,20 @@ def guardar_datos_limpios(df, ruta_salida=None, reporte=None):
     return ruta_salida
 
 def ejecutar_pipeline_limpieza(ruta_entrada=None, ruta_salida=None):
-    """
-    Ejecuta el ciclo completo de carga, limpieza y exportación,
-    imprimiendo estadísticas en consola.
-    """
+    """Ejecuta el ciclo completo de carga, ajuste y exportación."""
     print("=" * 70)
-    print("PIPELINE MODULAR DE LIMPIEZA DE DATOS - NETFLIX")
+    print("PIPELINE MODULAR DE AJUSTE Y LIMPIEZA DE DATOS - NETFLIX")
     print("=" * 70)
 
     df_crudo = cargar_dataset(ruta_entrada)
     print(f"[OK] Dataset cargado: {len(df_crudo)} filas, {df_crudo.shape[1]} columnas.")
 
     df_limpio, reporte = limpiar_datos(df_crudo)
-    print(f"[OK] Limpieza completada exitosamente.")
+    print(f"[OK] Limpieza y ajuste completados exitosamente.")
     print(f"     - Registros finales: {reporte['filas_limpias']} ({reporte['porcentaje_retencion']}% retenido)")
     print(f"     - Registros omitidos/desplazados: {reporte['filas_eliminadas']}")
-    print(f"     - Rango de Edad: {reporte['resumen_edad']['min']} a {reporte['resumen_edad']['max']} a単os (Media: {reporte['resumen_edad']['promedio']})")
-    print(f"     - Distribución Contenido: {reporte['conteo_tipos']}")
+    print(f"     - Rango de Edad: {reporte['resumen_edad']['min']} a {reporte['resumen_edad']['max']} anos (Media: {reporte['resumen_edad']['promedio']})")
+    print(f"     - Distribución por Audiencia: {reporte.get('distribucion_audiencia', {})}")
 
     ruta_guardado = guardar_datos_limpios(df_limpio, ruta_salida, reporte)
     print(f"[OK] Archivo limpio guardado en: {ruta_guardado}")

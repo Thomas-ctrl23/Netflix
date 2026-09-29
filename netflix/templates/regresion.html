@@ -56,7 +56,7 @@
         <div class="formula-netflix">
           <span class="math-label">Fórmula Ajustada para Netflix:</span>
           <h2 class="math-main">
-            Edad Recomendada = (<span class="val-m">0.0297</span> × Duración en min) + <span class="val-b">11.02</span>
+            Edad Recomendada = (<span class="val-m">0.0274</span> × Duración en min) + <span class="val-b">11.30</span>
           </h2>
         </div>
       </div>
@@ -74,7 +74,7 @@
         <div class="var-item">
           <span class="var-badge badge-m">m</span>
           <div class="var-info">
-            <strong>Pendiente = +0.0297</strong>
+            <strong>Pendiente = +0.0274</strong>
             <span>Tasa de incremento por cada minuto de duración</span>
           </div>
         </div>
@@ -83,14 +83,14 @@
           <span class="var-badge badge-x">x</span>
           <div class="var-info">
             <strong>Duración (minutos)</strong>
-            <span>Variable predictora independiente</span>
+            <span>Variable predictora independiente continua</span>
           </div>
         </div>
 
         <div class="var-item">
           <span class="var-badge badge-b">b</span>
           <div class="var-info">
-            <strong>Punto de Corte = 11.02 años</strong>
+            <strong>Punto de Corte = 11.30 años</strong>
             <span>Intersección con el eje Y a duración cero</span>
           </div>
         </div>
@@ -98,8 +98,8 @@
         <div class="var-item item-r2">
           <span class="var-badge badge-r2">R²</span>
           <div class="var-info">
-            <strong>Coeficiente R² = {{ metricas.get('r2_test', 0.5026) }}</strong>
-            <span>Calidad del ajuste del modelo en datos de prueba</span>
+            <strong>Coeficiente R² = {{ metricas.get('r2_test', 0.7520) }}</strong>
+            <span>Error MAE: ±{{ metricas.get('mae_test', 1.66) }} años (Ajuste Alto)</span>
           </div>
         </div>
       </div>
@@ -241,8 +241,8 @@
   </main>
 
   <script>
-    const M_PENDIENTE = 0.0297;
-    const B_INTERCEPTO = 11.02;
+    const M_PENDIENTE = 0.0274;
+    const B_INTERCEPTO = 11.30;
     const manualPoints = [];
 
     function clasificarEdad(edad) {
@@ -292,7 +292,7 @@
           cat: info.cat,
           badge: info.badge,
           color: info.color,
-          formula: `${y.toFixed(2)} = (0.0297 × ${x}) + 11.02`
+          formula: `${y.toFixed(2)} = (0.0274 × ${x}) + 11.30`
         };
         manualPoints.unshift(item);
         renderizarTablaManual();

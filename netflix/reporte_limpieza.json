@@ -28,56 +28,19 @@
     "listed_in": 3,
     "description": 3
   },
-  "filas_limpias": 8579,
-  "filas_eliminadas": 230,
-  "porcentaje_retencion": 97.39,
-  "distribucion_ratings": {
-    "TV-MA": 3207,
-    "TV-14": 2160,
-    "TV-PG": 862,
-    "R": 799,
-    "PG-13": 490,
-    "TV-Y7": 334,
-    "TV-Y": 307,
-    "PG": 287,
-    "NR": 80,
-    "G": 41,
-    "TV-Y7-FV": 6,
-    "NC-17": 3,
-    "UR": 3
+  "filas_limpias": 8624,
+  "filas_eliminadas": 185,
+  "porcentaje_retencion": 97.9,
+  "distribucion_audiencia": {
+    "Adultos (+17)": 4003,
+    "Adolescentes (+13)": 2636,
+    "Familiar (+10)": 1131,
+    "Infantil (TP)": 854
   },
   "resumen_edad": {
     "min": 0.0,
     "max": 18.0,
-    "promedio": 13.73,
+    "promedio": 13.69,
     "mediana": 14.0
-  },
-  "conteo_tipos": {
-    "Movie": 5999,
-    "TV Show": 2580
-  },
-  "top_paises": {
-    "United States": 3119,
-    "India": 999,
-    "Desconocido": 802,
-    "United Kingdom": 604,
-    "Japan": 257,
-    "Canada": 256,
-    "France": 210,
-    "South Korea": 210,
-    "Spain": 180,
-    "Mexico": 132
-  },
-  "top_generos": {
-    "Dramas": 1587,
-    "Comedies": 1204,
-    "Action & Adventure": 859,
-    "Documentaries": 788,
-    "International TV Shows": 765,
-    "Children & Family Movies": 555,
-    "Crime TV Shows": 399,
-    "Kids' TV": 349,
-    "Stand-Up Comedy": 331,
-    "Horror Movies": 275
   }
 }

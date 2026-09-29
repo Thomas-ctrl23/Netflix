@@ -128,6 +128,7 @@ def ruta_selector():
         "selector.html",
         metricas_reg=pipeline_regresion.metricas,
         metricas_arb=pipeline_arbol.metricas,
+        metricas_tree=pipeline_arbol.metricas,
         metricas_svm=pipeline_svm.metricas,
         metricas_rna=pipeline_rna.metricas
     )
