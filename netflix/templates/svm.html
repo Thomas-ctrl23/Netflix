@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Máquina de Vectores de Soporte (SVM) - Netflix ML Studio</title>
-  <meta name="description" content="Máquina de Vectores de Soporte (SVM) para Netflix: Duración vs Edad Recomendada, ajuste por margen máximo y vectores de soporte.">
-  
+  <meta name="description"
+    content="Máquina de Vectores de Soporte (SVM) para Netflix: Duración vs Edad Recomendada, ajuste por margen máximo y vectores de soporte.">
+
   <!-- Google Fonts: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Estilos Personalizados -->
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
   <!-- Ambient background glow -->
   <div class="ambient-glow glow-top-left"></div>
@@ -48,9 +53,10 @@
       <div class="formula-display">
         <div class="formula-general">
           <span class="math-label">Formulación Matemática SVR:</span>
-          <span class="math-expr text-purple">f(x) = &Sigma; (&alpha;<sub>i</sub> - &alpha;<sub>i</sub>*) K(x<sub>i</sub>, x) + b</span>
+          <span class="math-expr text-purple">f(x) = &Sigma; (&alpha;<sub>i</sub> - &alpha;<sub>i</sub>*)
+            K(x<sub>i</sub>, x) + b</span>
         </div>
-        
+
         <div class="formula-arrow"><i class="fa-solid fa-arrow-right"></i></div>
 
         <div class="formula-netflix">
@@ -139,7 +145,8 @@
 
           <div class="input-field btn-field">
             <label>&nbsp;</label>
-            <button type="submit" class="btn-calculate" id="btn-svm-eval" style="background: linear-gradient(135deg, #9333ea, #7e22ce); box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);">
+            <button type="submit" class="btn-calculate" id="btn-svm-eval"
+              style="background: linear-gradient(135deg, #9333ea, #7e22ce); box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);">
               <i class="fa-solid fa-vector-square"></i>
               <span>Evaluar con SVM</span>
             </button>
@@ -165,7 +172,8 @@
         </div>
         <div class="result-details-col">
           <span class="res-sub">Resultado del Modelo SVM (Support Vector Machine):</span>
-          <h4 class="res-title" id="svm-res-title">Edad Recomendada: <span class="text-purple" id="svm-res-age">16.1</span> años</h4>
+          <h4 class="res-title" id="svm-res-title">Edad Recomendada: <span class="text-purple"
+              id="svm-res-age">16.1</span> años</h4>
           <div class="res-equation">
             <code id="svm-res-formula">SVR RBF: f(105 min) = 16.14 años (Margen &epsilon; = 0.8)</code>
           </div>
@@ -180,7 +188,8 @@
       <!-- Tabla de Puntos Manuales Ingresados en la Sesión -->
       <div class="manual-table-section" id="svm-table-section" style="display: none;">
         <div class="table-section-header">
-          <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Puntos Manuales SVM (Temporales)</span>
+          <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Puntos Manuales SVM
+            (Temporales)</span>
           <button type="button" class="btn-clear-table" id="btn-clear-svm">
             <i class="fa-solid fa-trash-can"></i> Limpiar Puntos
           </button>
@@ -211,19 +220,25 @@
           <i class="fa-solid fa-chart-line text-purple"></i>
           <div>
             <h3>Gráfica del Modelo de Vectores de Soporte</h3>
-            <span class="graph-subtitle" id="svm-graph-subtitle">Ajuste no lineal SVR de Duración (min) vs. Edad Recomendada</span>
+            <span class="graph-subtitle" id="svm-graph-subtitle">Ajuste no lineal SVR de Duración (min) vs. Edad
+              Recomendada</span>
           </div>
         </div>
 
         <div class="graph-actions-group">
           <div class="graph-switcher-tabs">
-            <button type="button" class="btn-graph-tab active" data-img="/static/svm_duracion_edad_netflix.png" data-sub="Ajuste no lineal SVR de Duración (min) vs. Edad Recomendada" data-legend="Línea Violeta = Curva SVR | Líneas Doradas = Tubo de Margen ε">
+            <button type="button" class="btn-graph-tab active" data-img="/static/svm_duracion_edad_netflix.png"
+              data-sub="Ajuste no lineal SVR de Duración (min) vs. Edad Recomendada"
+              data-legend="Línea Violeta = Curva SVR | Líneas Doradas = Tubo de Margen ε">
               <i class="fa-solid fa-chart-line"></i> Gráfica 2D (Duración vs Edad)
             </button>
-            <button type="button" class="btn-graph-tab" data-img="/static/svm_hiperplano_netflix.png" data-sub="Frontera de decisión de separación entre Adulto vs Familiar" data-legend="Aros Violetas = Vectores de Soporte">
+            <button type="button" class="btn-graph-tab" data-img="/static/svm_hiperplano_netflix.png"
+              data-sub="Frontera de decisión de separación entre Adulto vs Familiar"
+              data-legend="Aros Violetas = Vectores de Soporte">
               <i class="fa-solid fa-vector-square"></i> Hiperplano Separador
             </button>
-            <button type="button" class="btn-graph-tab" data-img="/static/matriz_confusion_svm_netflix.png" data-sub="Matriz de Confusión de Clasificación" data-legend="Diagonal = Aciertos Correctos">
+            <button type="button" class="btn-graph-tab" data-img="/static/matriz_confusion_svm_netflix.png"
+              data-sub="Matriz de Confusión de Clasificación" data-legend="Diagonal = Aciertos Correctos">
               <i class="fa-solid fa-table-cells"></i> Matriz de Confusión
             </button>
           </div>
@@ -242,7 +257,9 @@
       </div>
 
       <div class="graph-frame">
-        <img src="/static/svm_duracion_edad_netflix.png" alt="Gráfica 2D de Vectores de Soporte Netflix" id="svm-graph-img" class="img-regression" onerror="if(this.src.indexOf('/api/')===-1){this.src='/api/images/svm-2d';}">
+        <img src="/static/svm_duracion_edad_netflix.png" alt="Gráfica 2D de Vectores de Soporte Netflix"
+          id="svm-graph-img" class="img-regression"
+          onerror="if(this.src.indexOf('/api/')===-1){this.src='/api/images/svm-2d';}">
       </div>
     </section>
 
@@ -405,4 +422,5 @@
     });
   </script>
 </body>
+
 </html>
