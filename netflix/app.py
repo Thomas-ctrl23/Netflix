@@ -34,5 +34,6 @@ if __name__ == "__main__":
     print(f"  - Selector de Modelos: http://127.0.0.1:{port}/", flush=True)
     print(f"  - Regresión Lineal:   http://127.0.0.1:{port}/regresion", flush=True)
     print(f"  - Árbol de Decisiones: http://127.0.0.1:{port}/arbol", flush=True)
+    print(f"  - Vectores de Soporte (SVM): http://127.0.0.1:{port}/svm", flush=True)
     print(f"=======================================================\n", flush=True)
     app.run(host="127.0.0.1", port=port, debug=False)

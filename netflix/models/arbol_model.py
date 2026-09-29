@@ -265,9 +265,21 @@ class NetflixDecisionTreePipeline:
         ax.grid(True, linestyle="--", alpha=0.25, color="#555555")
 
         plt.tight_layout()
-        os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+        dir_name = os.path.dirname(ruta_guardado)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         plt.savefig(ruta_guardado, dpi=160, facecolor=fig.get_facecolor(), edgecolor="none")
         plt.close(fig)
+
+        # Copiar también al directorio static de la app si se ejecutó desde la raíz
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_static = os.path.join(base_dir, "static", "arbol_decision_2d_netflix.png")
+        if os.path.abspath(ruta_guardado) != os.path.abspath(ruta_static):
+            try:
+                shutil.copyfile(ruta_guardado, ruta_static)
+            except Exception:
+                pass
+
         return ruta_guardado
 
     def generar_diagrama_arbol(self, ruta_guardado=None):
@@ -393,9 +405,20 @@ class NetflixDecisionTreePipeline:
         )
 
         plt.tight_layout()
-        os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+        dir_name = os.path.dirname(ruta_guardado)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         plt.savefig(ruta_guardado, dpi=160, facecolor=fig.get_facecolor(), bbox_inches="tight")
         plt.close(fig)
+
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_static = os.path.join(base_dir, "static", "arbol_diagrama_netflix.png")
+        if os.path.abspath(ruta_guardado) != os.path.abspath(ruta_static):
+            try:
+                shutil.copyfile(ruta_guardado, ruta_static)
+            except Exception:
+                pass
+
         return ruta_guardado
 
     def generar_matriz_confusion(self, ruta_guardado=None):
@@ -438,7 +461,18 @@ class NetflixDecisionTreePipeline:
         plt.setp(ax.get_yticklabels(), color="#cccccc")
 
         plt.tight_layout()
-        os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+        dir_name = os.path.dirname(ruta_guardado)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         plt.savefig(ruta_guardado, dpi=160, facecolor=fig.get_facecolor(), edgecolor="none")
         plt.close(fig)
+
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_static = os.path.join(base_dir, "static", "matriz_confusion_netflix.png")
+        if os.path.abspath(ruta_guardado) != os.path.abspath(ruta_static):
+            try:
+                shutil.copyfile(ruta_guardado, ruta_static)
+            except Exception:
+                pass
+
         return ruta_guardado

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Árbol de Decisiones - Netflix ML Studio</title>
-  <meta name="description" content="Árbol de Decisiones para Netflix: Duración vs Edad Recomendada, función escalonada 2D y particiones por umbral.">
+  <title>Máquina de Vectores de Soporte (SVM) - Netflix ML Studio</title>
+  <meta name="description" content="Máquina de Vectores de Soporte (SVM) para Netflix: Duración vs Edad Recomendada, ajuste por margen máximo y vectores de soporte.">
   
   <!-- Google Fonts: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,8 +29,8 @@
         <i class="fa-solid fa-arrow-left"></i>
         <span>Cambiar de Modelo (Volver al Selector)</span>
       </a>
-      <span class="view-tag tag-tree">
-        <i class="fa-solid fa-sitemap"></i> Modelo: Árbol de Decisiones (Decision Tree)
+      <span class="view-tag tag-svm">
+        <i class="fa-solid fa-shapes"></i> Modelo: Máquina de Vectores de Soporte (SVM)
       </span>
     </div>
   </div>
@@ -38,36 +38,36 @@
   <!-- Main Content -->
   <main class="main-wrapper">
 
-    <!-- 1. SECCIÓN DE LA FÓRMULA / REGLAS DEL ÁRBOL -->
+    <!-- 1. SECCIÓN DE LA FÓRMULA / FUNDAMENTOS DEL SVM -->
     <section class="formula-card">
       <div class="formula-header">
-        <span class="tag-pill tag-pill-tree"><i class="fa-solid fa-sitemap"></i> Modelo Jerárquico de Decisión</span>
-        <span class="formula-type">Partición Escalonada 2D (DecisionTreeRegressor, max_depth=3)</span>
+        <span class="tag-pill tag-pill-svm"><i class="fa-solid fa-shapes"></i> Modelo de Margen Máximo</span>
+        <span class="formula-type">Support Vector Regression (SVR - Kernel RBF, C=5.0, &epsilon;=0.8)</span>
       </div>
 
       <div class="formula-display">
         <div class="formula-general">
-          <span class="math-label">Criterio de Decisión:</span>
-          <span class="math-expr text-gold">Si Duración &le; Umbral ➔ Rama A, Sino ➔ Rama B</span>
+          <span class="math-label">Formulación Matemática SVR:</span>
+          <span class="math-expr text-purple">f(x) = &Sigma; (&alpha;<sub>i</sub> - &alpha;<sub>i</sub>*) K(x<sub>i</sub>, x) + b</span>
         </div>
         
         <div class="formula-arrow"><i class="fa-solid fa-arrow-right"></i></div>
 
         <div class="formula-netflix">
-          <span class="math-label">Ajuste de Partición para Netflix (Duración vs Edad):</span>
+          <span class="math-label">Ajuste de Margen para Netflix (Duración vs Edad):</span>
           <h2 class="math-main">
-            Edad Recomendada = <span class="val-m">Partición Escalonada</span>(Duración en min)
+            Edad Recomendada = <span class="val-m">Ajuste No Lineal SVM</span>(Duración en min) &plusmn; &epsilon;
           </h2>
         </div>
       </div>
 
-      <!-- Variables y Parámetros del Árbol -->
+      <!-- Variables y Parámetros del SVM -->
       <div class="formula-vars-grid">
         <div class="var-item">
           <span class="var-badge badge-y">y</span>
           <div class="var-info">
             <strong>Edad Recomendada (target_age)</strong>
-            <span>Variable continua agrupada en 8 hojas</span>
+            <span>Variable continua predicha por el hiperplano</span>
           </div>
         </div>
 
@@ -75,31 +75,31 @@
           <span class="var-badge badge-x">x</span>
           <div class="var-info">
             <strong>Duración (minutos)</strong>
-            <span>Variable predictora independiente continua</span>
+            <span>Variable predictora proyectada mediante RBF</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-b">Prof</span>
+          <span class="var-badge badge-sv">SV</span>
           <div class="var-info">
-            <strong>Profundidad: 3 niveles</strong>
-            <span>Estructura jerárquica binaria</span>
+            <strong>{{ metricas.get('total_sv_dur', 5336) }} Vectores Soporte</strong>
+            <span>Puntos críticos que delimitan el tubo de margen</span>
           </div>
         </div>
 
         <div class="var-item">
-          <span class="var-badge badge-m">Hojas</span>
+          <span class="var-badge badge-b">Kernel</span>
           <div class="var-info">
-            <strong>8 Nodos Hojas</strong>
-            <span>Rangos de edad: TP hasta +17 años</span>
+            <strong>Kernel RBF Gaussiano</strong>
+            <span>Transformación no lineal implícita</span>
           </div>
         </div>
 
         <div class="var-item item-r2">
-          <span class="var-badge badge-r2">Nodos</span>
+          <span class="var-badge badge-r2">&epsilon;</span>
           <div class="var-info">
-            <strong>15 Nodos Totales</strong>
-            <span>Criterio de división por varianza mínima</span>
+            <strong>Tubo de Margen: &plusmn;0.8 años</strong>
+            <span>Zona insensible a errores mínimos</span>
           </div>
         </div>
       </div>
@@ -109,10 +109,10 @@
     <section class="manual-data-card">
       <div class="manual-card-header">
         <div class="manual-title-group">
-          <i class="fa-solid fa-pen-to-square text-gold"></i>
+          <i class="fa-solid fa-pen-to-square text-purple"></i>
           <div>
             <h3>Agregar y Evaluar Datos Manuales</h3>
-            <span class="manual-subtitle">Prueba cualquier duración en las ramas del árbol de decisiones</span>
+            <span class="manual-subtitle">Prueba cualquier duración en la función de soporte de SVM</span>
           </div>
         </div>
         <div class="safe-badge">
@@ -122,26 +122,26 @@
       </div>
 
       <!-- Formulario de Entrada Manual (Duración -> Edad) -->
-      <form id="form-tree-manual" class="manual-form">
+      <form id="form-svm-manual" class="manual-form">
         <div class="manual-form-grid">
           <div class="input-field">
-            <label for="tree-title"><i class="fa-solid fa-film"></i> Título / Nombre (Opcional):</label>
-            <input type="text" id="tree-title" class="manual-input" placeholder="Ej: Mi Película de Prueba">
+            <label for="svm-title"><i class="fa-solid fa-film"></i> Título / Nombre (Opcional):</label>
+            <input type="text" id="svm-title" class="manual-input" placeholder="Ej: Mi Película de Prueba">
           </div>
 
           <div class="input-field">
-            <label for="tree-duration"><i class="fa-solid fa-clock text-cyan"></i> Duración en minutos (x):</label>
+            <label for="svm-duration"><i class="fa-solid fa-clock text-cyan"></i> Duración en minutos (x):</label>
             <div class="duration-input-wrapper">
-              <input type="number" id="tree-duration" class="manual-input" min="1" max="500" value="95" required>
+              <input type="number" id="svm-duration" class="manual-input" min="1" max="500" value="105" required>
               <span class="input-unit">min</span>
             </div>
           </div>
 
           <div class="input-field btn-field">
             <label>&nbsp;</label>
-            <button type="submit" class="btn-calculate btn-calculate-tree" id="btn-tree-eval">
-              <i class="fa-solid fa-sitemap"></i>
-              <span>Evaluar con el Árbol</span>
+            <button type="submit" class="btn-calculate" id="btn-svm-eval" style="background: linear-gradient(135deg, #9333ea, #7e22ce); box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);">
+              <i class="fa-solid fa-vector-square"></i>
+              <span>Evaluar con SVM</span>
             </button>
           </div>
         </div>
@@ -149,39 +149,39 @@
         <!-- Presets rápidos -->
         <div class="quick-presets">
           <span class="presets-label">Valores rápidos:</span>
-          <button type="button" class="btn-preset" data-min="25">25 min (Infantil)</button>
-          <button type="button" class="btn-preset" data-min="45">45 min (Animación)</button>
-          <button type="button" class="btn-preset" data-min="75">75 min (Juvenil)</button>
+          <button type="button" class="btn-preset" data-min="30">30 min (Corto)</button>
+          <button type="button" class="btn-preset" data-min="60">60 min (Medio)</button>
           <button type="button" class="btn-preset" data-min="90">90 min (Estándar)</button>
           <button type="button" class="btn-preset" data-min="105">105 min (Comercial)</button>
-          <button type="button" class="btn-preset" data-min="130">130 min (Maduro)</button>
+          <button type="button" class="btn-preset" data-min="120">120 min (Largo)</button>
+          <button type="button" class="btn-preset" data-min="150">150 min (Extenso)</button>
         </div>
       </form>
 
       <!-- Resultado del Último Cálculo -->
-      <div class="manual-result-box" id="tree-result-box">
+      <div class="manual-result-box" id="svm-result-box">
         <div class="result-badge-col">
-          <div class="result-age-badge" id="tree-res-badge" style="background: #ff8c00;">+14</div>
+          <div class="result-age-badge" id="svm-res-badge" style="background: #ff8c00;">+15</div>
         </div>
         <div class="result-details-col">
-          <span class="res-sub">Resultado del Árbol de Decisiones:</span>
-          <h4 class="res-title" id="tree-res-title">Edad Recomendada: <span class="text-gold" id="tree-res-age">14.0</span> años</h4>
+          <span class="res-sub">Resultado del Modelo SVM (Support Vector Machine):</span>
+          <h4 class="res-title" id="svm-res-title">Edad Recomendada: <span class="text-purple" id="svm-res-age">16.1</span> años</h4>
           <div class="res-equation">
-            <code id="tree-res-rule">80.5 &lt; Duración &le; 93.5 min ➔ Rama 7 (Películas comerciales estándar)</code>
+            <code id="svm-res-formula">SVR RBF: f(105 min) = 16.14 años (Margen &epsilon; = 0.8)</code>
           </div>
         </div>
         <div class="result-meta-col">
           <span class="meta-label">Clasificación Netflix:</span>
-          <span class="meta-val" id="tree-res-cat">TV-14 / PG-13</span>
+          <span class="meta-val" id="svm-res-cat">TV-14 / TV-MA</span>
           <span class="meta-status"><i class="fa-solid fa-circle-check text-green"></i> No añadido al dataset</span>
         </div>
       </div>
 
       <!-- Tabla de Puntos Manuales Ingresados en la Sesión -->
-      <div class="manual-table-section" id="tree-table-section" style="display: none;">
+      <div class="manual-table-section" id="svm-table-section" style="display: none;">
         <div class="table-section-header">
-          <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Puntos Manuales del Árbol (Temporales)</span>
-          <button type="button" class="btn-clear-table" id="btn-clear-tree">
+          <span class="table-title"><i class="fa-solid fa-list-check"></i> Historial de Puntos Manuales SVM (Temporales)</span>
+          <button type="button" class="btn-clear-table" id="btn-clear-svm">
             <i class="fa-solid fa-trash-can"></i> Limpiar Puntos
           </button>
         </div>
@@ -194,69 +194,69 @@
                 <th>Duración (x)</th>
                 <th>Edad Calculada (y)</th>
                 <th>Clasificación</th>
-                <th>Regla Activada</th>
+                <th>Detalle del Modelo</th>
                 <th>Acción</th>
               </tr>
             </thead>
-            <tbody id="tree-table-body"></tbody>
+            <tbody id="svm-table-body"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- 3. SECCIÓN DE LA GRÁFICA (2D ESCALONADA, DIAGRAMA DE RAMAS Y MATRIZ) -->
+    <!-- 3. SECCIÓN DE LA GRÁFICA (2D DURACIÓN VS EDAD, HIPERPLANO Y MATRIZ) -->
     <section class="graph-card">
       <div class="graph-card-header">
         <div class="graph-title-group">
-          <i class="fa-solid fa-chart-line text-gold"></i>
+          <i class="fa-solid fa-chart-line text-purple"></i>
           <div>
-            <h3>Gráfica del Árbol de Decisiones</h3>
-            <span class="graph-subtitle" id="tree-graph-subtitle">Partición escalonada de Duración (min) vs. Edad Recomendada</span>
+            <h3>Gráfica del Modelo de Vectores de Soporte</h3>
+            <span class="graph-subtitle" id="svm-graph-subtitle">Ajuste no lineal SVR de Duración (min) vs. Edad Recomendada</span>
           </div>
         </div>
 
         <div class="graph-actions-group">
           <div class="graph-switcher-tabs">
-            <button type="button" class="btn-graph-tab active" data-img="/static/arbol_decision_2d_netflix.png" data-sub="Partición escalonada de Duración (min) vs. Edad Recomendada" data-legend="Línea Roja Escalonada = Umbrales del Árbol">
+            <button type="button" class="btn-graph-tab active" data-img="/static/svm_duracion_edad_netflix.png" data-sub="Ajuste no lineal SVR de Duración (min) vs. Edad Recomendada" data-legend="Línea Violeta = Curva SVR | Líneas Doradas = Tubo de Margen ε">
               <i class="fa-solid fa-chart-line"></i> Gráfica 2D (Duración vs Edad)
             </button>
-            <button type="button" class="btn-graph-tab" data-img="/static/arbol_diagrama_netflix.png" data-sub="Estructura Jerárquica de Nodos, Divisiones y Hojas del Árbol" data-legend="Diagrama Completo de Decisiones">
-              <i class="fa-solid fa-diagram-project"></i> Diagrama de Ramas
+            <button type="button" class="btn-graph-tab" data-img="/static/svm_hiperplano_netflix.png" data-sub="Frontera de decisión de separación entre Adulto vs Familiar" data-legend="Aros Violetas = Vectores de Soporte">
+              <i class="fa-solid fa-vector-square"></i> Hiperplano Separador
             </button>
-            <button type="button" class="btn-graph-tab" data-img="/static/matriz_confusion_netflix.png" data-sub="Matriz de Confusión de Clasificación" data-legend="Diagonal = Aciertos Correctos">
+            <button type="button" class="btn-graph-tab" data-img="/static/matriz_confusion_svm_netflix.png" data-sub="Matriz de Confusión de Clasificación" data-legend="Diagonal = Aciertos Correctos">
               <i class="fa-solid fa-table-cells"></i> Matriz de Confusión
             </button>
           </div>
 
           <div class="graph-legend">
             <span class="legend-item">
-              <span class="legend-dot dot-cyan"></span>
-              <span id="tree-legend-text">Línea Roja Escalonada = Umbrales del Árbol</span>
+              <span class="legend-dot" style="background: #a855f7;"></span>
+              <span id="svm-legend-text">Línea Violeta = Curva SVR | Líneas Doradas = Tubo de Margen ε</span>
             </span>
           </div>
 
-          <a href="/static/arbol_decision_2d_netflix.png" target="_blank" class="btn-hd-link" id="tree-hd-link">
+          <a href="/static/svm_duracion_edad_netflix.png" target="_blank" class="btn-hd-link" id="svm-hd-link">
             <i class="fa-solid fa-up-right-from-square"></i> Abrir Gráfico HD
           </a>
         </div>
       </div>
 
       <div class="graph-frame">
-        <img src="/static/arbol_decision_2d_netflix.png" alt="Gráfica 2D del Árbol de Decisiones Netflix" id="tree-graph-img" class="img-regression" onerror="if(this.src.indexOf('/api/')===-1){this.src='/api/images/arbol-2d';}">
+        <img src="/static/svm_duracion_edad_netflix.png" alt="Gráfica 2D de Vectores de Soporte Netflix" id="svm-graph-img" class="img-regression" onerror="if(this.src.indexOf('/api/')===-1){this.src='/api/images/svm-2d';}">
       </div>
     </section>
 
   </main>
 
   <script>
-    const pointsTree = [];
+    const pointsSVM = [];
 
-    async function evaluarDatoArbol(titulo, duracionMin, agregarATabla = true) {
+    async function evaluarDatoSVM(titulo, duracionMin, agregarATabla = true) {
       const x = parseFloat(duracionMin);
       if (isNaN(x) || x <= 0) return;
 
       try {
-        const resp = await fetch("/api/predict/arbol-2d", {
+        const resp = await fetch("/api/predict/svm-duracion", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ duracion: x })
@@ -266,10 +266,10 @@
         if (json.status === "success" && json.data) {
           const d = json.data;
 
-          const resBadge = document.getElementById("tree-res-badge");
-          const resAgeNum = document.getElementById("tree-res-age");
-          const resRule = document.getElementById("tree-res-rule");
-          const resCat = document.getElementById("tree-res-cat");
+          const resBadge = document.getElementById("svm-res-badge");
+          const resAgeNum = document.getElementById("svm-res-age");
+          const resFormula = document.getElementById("svm-res-formula");
+          const resCat = document.getElementById("svm-res-cat");
 
           if (resBadge) {
             resBadge.innerText = d.badge;
@@ -277,11 +277,11 @@
             resBadge.style.boxShadow = `0 0 16px ${d.color}88`;
           }
           if (resAgeNum) resAgeNum.innerText = d.edad_recomendada.toFixed(1);
-          if (resRule) resRule.innerText = d.regla_activada;
+          if (resFormula) resFormula.innerText = d.formula_detalle;
           if (resCat) resCat.innerText = d.clasificacion_sugerida;
 
           if (agregarATabla) {
-            pointsTree.unshift({
+            pointsSVM.unshift({
               id: Date.now(),
               titulo: titulo ? titulo.trim() : `Prueba ${x} min`,
               x: x,
@@ -289,38 +289,38 @@
               cat: d.clasificacion_sugerida,
               badge: d.badge,
               color: d.color,
-              regla: d.regla_activada
+              detalle: d.formula_detalle
             });
-            renderizarTablaTree();
+            renderizarTablaSVM();
           }
         }
       } catch (err) {
-        console.error("Error al evaluar con el árbol 2D:", err);
+        console.error("Error al evaluar con SVM:", err);
       }
     }
 
-    function renderizarTablaTree() {
-      const sec = document.getElementById("tree-table-section");
-      const body = document.getElementById("tree-table-body");
+    function renderizarTablaSVM() {
+      const sec = document.getElementById("svm-table-section");
+      const body = document.getElementById("svm-table-body");
       if (!sec || !body) return;
 
-      if (pointsTree.length === 0) {
+      if (pointsSVM.length === 0) {
         sec.style.display = "none";
         body.innerHTML = "";
         return;
       }
 
       sec.style.display = "flex";
-      body.innerHTML = pointsTree.map((p, idx) => `
+      body.innerHTML = pointsSVM.map((p, idx) => `
         <tr>
           <td><code style="color: #9aa0a6;">#${idx + 1}</code></td>
           <td><strong style="color: #ffffff;">${escapeHtml(p.titulo)}</strong></td>
           <td><span style="color: #00d4ff; font-weight: 700;">${p.x} min</span></td>
           <td><strong style="color: #00e676;">${p.y} años</strong></td>
           <td><span style="background: ${p.color}22; color: ${p.color}; padding: 3px 8px; border-radius: 4px; font-weight: 700;">${p.badge}</span></td>
-          <td><span style="color: #9aa0a6; font-size: 11px;">${escapeHtml(p.regla)}</span></td>
+          <td><span style="color: #c084fc; font-size: 11px;">${escapeHtml(p.detalle)}</span></td>
           <td>
-            <button class="btn-del-point" onclick="eliminarPuntoTree(${p.id})">
+            <button class="btn-del-point" onclick="eliminarPuntoSVM(${p.id})">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </td>
@@ -328,11 +328,11 @@
       `).join("");
     }
 
-    function eliminarPuntoTree(id) {
-      const idx = pointsTree.findIndex(p => p.id === id);
+    function eliminarPuntoSVM(id) {
+      const idx = pointsSVM.findIndex(p => p.id === id);
       if (idx !== -1) {
-        pointsTree.splice(idx, 1);
-        renderizarTablaTree();
+        pointsSVM.splice(idx, 1);
+        renderizarTablaSVM();
       }
     }
 
@@ -347,13 +347,13 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("form-tree-manual");
+      const form = document.getElementById("form-svm-manual");
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          const titulo = document.getElementById("tree-title").value;
-          const duracion = document.getElementById("tree-duration").value;
-          evaluarDatoArbol(titulo, duracion, true);
+          const titulo = document.getElementById("svm-title").value;
+          const duracion = document.getElementById("svm-duration").value;
+          evaluarDatoSVM(titulo, duracion, true);
         });
       }
 
@@ -361,28 +361,28 @@
       document.querySelectorAll(".btn-preset").forEach(btn => {
         btn.addEventListener("click", () => {
           const val = btn.getAttribute("data-min");
-          const input = document.getElementById("tree-duration");
+          const input = document.getElementById("svm-duration");
           if (input) input.value = val;
-          const tituloInput = document.getElementById("tree-title");
-          evaluarDatoArbol(tituloInput ? tituloInput.value : "", val, true);
+          const tituloInput = document.getElementById("svm-title");
+          evaluarDatoSVM(tituloInput ? tituloInput.value : "", val, true);
         });
       });
 
       // Limpiar puntos
-      const btnClear = document.getElementById("btn-clear-tree");
+      const btnClear = document.getElementById("btn-clear-svm");
       if (btnClear) {
         btnClear.addEventListener("click", () => {
-          pointsTree.length = 0;
-          renderizarTablaTree();
+          pointsSVM.length = 0;
+          renderizarTablaSVM();
         });
       }
 
       // Conmutador de Pestañas de Gráfica
       const tabs = document.querySelectorAll(".btn-graph-tab");
-      const imgElem = document.getElementById("tree-graph-img");
-      const subElem = document.getElementById("tree-graph-subtitle");
-      const legElem = document.getElementById("tree-legend-text");
-      const hdLink = document.getElementById("tree-hd-link");
+      const imgElem = document.getElementById("svm-graph-img");
+      const subElem = document.getElementById("svm-graph-subtitle");
+      const legElem = document.getElementById("svm-legend-text");
+      const hdLink = document.getElementById("svm-hd-link");
 
       tabs.forEach(tab => {
         tab.addEventListener("click", () => {
@@ -401,7 +401,7 @@
       });
 
       // Evaluación inicial de ejemplo
-      evaluarDatoArbol("Película Estándar", 95, false);
+      evaluarDatoSVM("Película de Prueba", 105, false);
     });
   </script>
 </body>

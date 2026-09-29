@@ -52,7 +52,7 @@
       <span class="tag-pill"><i class="fa-solid fa-layer-group"></i> Panel de Control de Modelos</span>
       <h2 class="selector-heading">¿Qué modelo deseas utilizar?</h2>
       <p class="selector-subheading">
-        Selecciona entre el modelo de <strong>Regresión Lineal</strong> para predecir la edad recomendada de forma continua, o el modelo de <strong>Árbol de Decisiones</strong> para clasificar las categorías de audiencia oficiales de Netflix.
+        Selecciona entre el modelo de <strong>Regresión Lineal</strong> para estimar la edad continua, el <strong>Árbol de Decisiones</strong> para reglas particionadas, o la <strong>Máquina de Vectores de Soporte (SVM)</strong> para clasificación por hiperplanos de margen máximo.
       </p>
     </div>
 
@@ -113,34 +113,120 @@
         </div>
 
         <h3 class="model-title">Árbol de Decisiones</h3>
-        <span class="model-paradigm">Clasificación Supervisada Multiclase</span>
+        <span class="model-paradigm">Partición Escalonada por Umbrales</span>
 
         <p class="model-summary">
-          Predice la <strong>Clasificación Oficial ('rating')</strong> como TV-MA, TV-14, PG-13 o TV-Y mediante reglas lógicas de decisión particionadas por país, género, tipo y duración.
+          Estima la <strong>Edad Recomendada</strong> a partir de la duración del contenido dividiendo el espacio en 8 intervalos con reglas lógicas de decisión.
         </p>
 
         <!-- Píldoras de Métricas Clave -->
         <div class="model-spec-grid">
           <div class="spec-item">
             <span class="spec-label">Algoritmo:</span>
-            <strong class="spec-val text-gold">DecisionTreeClassifier</strong>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Accuracy Test:</span>
-            <strong class="spec-val text-green">{{ metricas_arb.get('accuracy_test', 0.44) }}</strong>
+            <strong class="spec-val text-gold">DecisionTreeRegressor (2D)</strong>
           </div>
           <div class="spec-item">
             <span class="spec-label">Profundidad:</span>
-            <strong class="spec-val text-cyan">{{ metricas_arb.get('profundidad_maxima', 3) }} niveles</strong>
+            <strong class="spec-val text-cyan">3 niveles</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Nodos / Hojas:</span>
+            <strong class="spec-val text-green">15 nodos / 8 hojas</strong>
           </div>
           <div class="spec-item">
             <span class="spec-label">Gráfica:</span>
-            <strong class="spec-val text-white">Matriz de Confusión</strong>
+            <strong class="spec-val text-white">Dispersión 2D + Escalonada</strong>
           </div>
         </div>
 
         <a href="/arbol" class="btn-select-model btn-tree">
           <span>Abrir Árbol de Decisiones</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- MODEL 3: MÁQUINA DE VECTORES DE SOPORTE (SVM) -->
+      <div class="model-choice-card card-svm">
+        <div class="model-card-badge badge-svm">
+          <i class="fa-solid fa-shapes"></i> Modelo 3
+        </div>
+
+        <div class="model-icon-box box-svm">
+          <i class="fa-solid fa-vector-square"></i>
+        </div>
+
+        <h3 class="model-title">Vectores de Soporte</h3>
+        <span class="model-paradigm">Support Vector Machine (SVR 2D)</span>
+
+        <p class="model-summary">
+          Ajusta la curva no lineal de <strong>Edad Recomendada</strong> a partir de la duración maximizando el tubo de margen insensible (&epsilon;) y los vectores de soporte.
+        </p>
+
+        <!-- Píldoras de Métricas Clave -->
+        <div class="model-spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">Algoritmo:</span>
+            <strong class="spec-val text-purple">SVR (Kernel RBF, C=5.0)</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Tubo de Margen:</span>
+            <strong class="spec-val text-gold">&plusmn;0.8 años</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Vectores Soporte:</span>
+            <strong class="spec-val text-cyan">{{ metricas_svm.get('total_sv_dur', 5336) if metricas_svm else '5,336' }} pts</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Gráfica:</span>
+            <strong class="spec-val text-white">Curva SVR + Tubo Margen</strong>
+          </div>
+        </div>
+
+        <a href="/svm" class="btn-select-model btn-svm">
+          <span>Abrir Vectores de Soporte</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- MODEL 4: REDES NEURONALES ARTIFICIALES (RNA) -->
+      <div class="model-choice-card card-rna">
+        <div class="model-card-badge badge-rna" style="background: rgba(0, 230, 118, 0.2); color: #00e676;">
+          <i class="fa-solid fa-brain"></i> Modelo 4
+        </div>
+
+        <div class="model-icon-box box-rna" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border-color: rgba(0, 230, 118, 0.3);">
+          <i class="fa-solid fa-network-wired"></i>
+        </div>
+
+        <h3 class="model-title">Redes Neuronales (RNA)</h3>
+        <span class="model-paradigm">Perceptrón Multicapa (MLP)</span>
+
+        <p class="model-summary">
+          Aprende patrones no lineales complejos de <strong>Edad Recomendada</strong> a partir de la duración mediante capas densas de neuronas con activación ReLU.
+        </p>
+
+        <!-- Píldoras de Métricas Clave -->
+        <div class="model-spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">Arquitectura:</span>
+            <strong class="spec-val text-green">{{ metricas_rna.get('arquitectura', '1 -> 64 -> 32 -> 1') if metricas_rna else '1 -> 64 -> 32 -> 1' }}</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Activación:</span>
+            <strong class="spec-val text-cyan">ReLU (Rectified Linear)</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Pérdida Loss:</span>
+            <strong class="spec-val text-gold">{{ metricas_rna.get('perdida_final', 0.04) if metricas_rna else '0.04' }}</strong>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Gráfica:</span>
+            <strong class="spec-val text-white">Curva MLP + Pérdida</strong>
+          </div>
+        </div>
+
+        <a href="/rna" class="btn-select-model" style="background: linear-gradient(135deg, #00e676, #00b0ff); border-color: #00e676; color: #000; font-weight: 700;">
+          <span>Abrir Red Neuronal (RNA)</span>
           <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
@@ -157,7 +243,7 @@
         <div class="mvc-col">
           <span class="mvc-badge badge-m-mvc">M</span>
           <strong>Modelos (models/)</strong>
-          <p>Lógica de negocio, limpieza de datos, entrenamiento de Regresión Lineal y Árbol de Decisiones.</p>
+          <p>Lógica de negocio, limpieza de datos, Regresión Lineal, Árbol de Decisiones, Máquina de Vectores de Soporte (SVM) y Redes Neuronales Artificiales (RNA).</p>
         </div>
         <div class="mvc-col">
           <span class="mvc-badge badge-v-mvc">V</span>
